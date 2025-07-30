@@ -1,5 +1,5 @@
 .env
 node_modules/
-.env.example 
+.env.example
 .DS_Store
 npm-debug.log 
