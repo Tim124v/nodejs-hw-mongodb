@@ -6,4 +6,16 @@ export async function getAllContacts() {
 
 export async function getContactById(contactId) {
   return await Contact.findById(contactId);
+}
+
+export async function createContact(contactData) {
+  return await Contact.create(contactData);
+}
+
+export async function updateContact(contactId, updateData) {
+  return await Contact.findByIdAndUpdate(contactId, updateData, { new: true });
+}
+
+export async function deleteContact(contactId) {
+  return await Contact.findByIdAndDelete(contactId);
 } 
