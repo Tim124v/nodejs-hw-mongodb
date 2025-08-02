@@ -6,11 +6,19 @@ import { deleteContact } from '../services/contacts.js';
 import createError from 'http-errors';
 
 export async function getContactsController(req, res) {
-  const contacts = await getAllContacts();
+  const {
+    page = 1,
+    perPage = 10,
+    sortBy = 'name',
+    sortOrder = 'asc',
+    type,
+    isFavourite
+  } = req.query;
+  const result = await getAllContacts({ page, perPage, sortBy, sortOrder, type, isFavourite });
   res.status(200).json({
-    status: 200,
-    message: 'Successfully found contacts!',
-    data: contacts,
+    status: 'success',
+    code: 200,
+    data: result,
   });
 }
 
