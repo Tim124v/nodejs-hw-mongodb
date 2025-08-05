@@ -9,14 +9,16 @@ export async function getAllContacts(queryParams) {
     ...filters
   } = queryParams;
 
-  const skip = (page - 1) * perPage;
-  const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
-
-  // Преобразуем строки 'true'/'false' в boolean
   Object.keys(filters).forEach(key => {
+    if (filters[key] === undefined) {
+      delete filters[key];
+    }
     if (filters[key] === 'true') filters[key] = true;
     if (filters[key] === 'false') filters[key] = false;
   });
+
+  const skip = (page - 1) * perPage;
+  const sort = { [sortBy]: sortOrder === 'desc' ? -1 : 1 };
 
   const total = await Contact.countDocuments(filters);
   const contacts = await Contact.find(filters)
@@ -30,10 +32,10 @@ export async function getAllContacts(queryParams) {
     data: contacts,
     page: Number(page),
     perPage: Number(perPage),
-    total,
+    totalItems: total,
     totalPages,
-    hasNextPage: Number(page) < totalPages,
-    hasPrevPage: Number(page) > 1
+    hasPreviousPage: Number(page) > 1,
+    hasNextPage: Number(page) < totalPages
   };
 }
 

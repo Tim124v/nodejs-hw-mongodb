@@ -1,8 +1,9 @@
 export function errorHandler(err, req, res, next) {
-  const status = err.status || 500;
-  res.status(status).json({
-    status,
-    message: status === 500 ? 'Something went wrong' : err.message,
-    data: err.message,
+  const code = err.status || 500;
+  res.status(code).json({
+    status: code >= 500 ? 'error' : 'fail',
+    code,
+    message: code === 500 ? 'Internal Server Error' : err.message,
+    data: null,
   });
 }

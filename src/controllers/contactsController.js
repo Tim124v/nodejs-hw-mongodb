@@ -18,6 +18,7 @@ export async function getContactsController(req, res) {
   res.status(200).json({
     status: 'success',
     code: 200,
+    message: 'Successfully found contacts!',
     data: result,
   });
 }
