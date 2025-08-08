@@ -16,7 +16,7 @@ export async function getContactsController(req, res) {
   } = req.query;
   const result = await getAllContacts({ page, perPage, sortBy, sortOrder, type, isFavourite });
   res.status(200).json({
-    status: 'success',
+    status: 200,
     message: 'Successfully found contacts!',
     data: result,
   });
@@ -29,7 +29,7 @@ export async function getContactByIdController(req, res) {
     throw createError(404, 'Contact not found');
   }
   res.status(200).json({
-    status: 'success',
+    status: 200,
     message: `Successfully found contact with id ${contactId}!`,
     data: contact,
   });
@@ -38,7 +38,7 @@ export async function getContactByIdController(req, res) {
 export async function createContactController(req, res) {
   const contact = await createContact(req.body);
   res.status(201).json({
-    status: 'success',
+    status: 201,
     message: 'Successfully created a contact!',
     data: contact,
   });
@@ -51,7 +51,7 @@ export async function updateContactController(req, res) {
     throw createError(404, 'Contact not found');
   }
   res.status(200).json({
-    status: 'success',
+    status: 200,
     message: 'Successfully patched a contact!',
     data: updatedContact,
   });
