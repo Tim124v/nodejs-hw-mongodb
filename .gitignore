@@ -4,3 +4,4 @@
 *.bak
 **/.DS_Store
 cookie.txt
+node_modules/
