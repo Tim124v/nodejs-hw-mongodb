@@ -16,3 +16,12 @@ export const refreshSchema = Joi.object({
 });
 
 
+export const sendResetEmailSchema = Joi.object({
+  email: Joi.string().email().min(5).max(50).required(),
+});
+
+export const resetPasswordSchema = Joi.object({
+  token: Joi.string().required(),
+  password: Joi.string().min(6).max(50).required(),
+});
+

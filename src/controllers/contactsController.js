@@ -6,6 +6,7 @@ import {
   deleteContact,
 } from '../services/contacts.js';
 import createError from 'http-errors';
+import { uploadImage } from '../services/upload.js';
 
 export async function getContactsController(req, res) {
   const {
@@ -44,7 +45,12 @@ export async function getContactByIdController(req, res) {
 }
 
 export async function createContactController(req, res) {
-  const contact = await createContact({ ...req.body, userId: req.user._id });
+  const data = { ...req.body, userId: req.user._id };
+  if (req.file?.buffer) {
+    const uploaded = await uploadImage(req.file.buffer);
+    data.photo = uploaded.secure_url || uploaded.url;
+  }
+  const contact = await createContact(data);
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
@@ -54,7 +60,12 @@ export async function createContactController(req, res) {
 
 export async function updateContactController(req, res) {
   const { contactId } = req.params;
-  const updatedContact = await updateContact(contactId, req.body, req.user._id);
+  const updateData = { ...req.body };
+  if (req.file?.buffer) {
+    const uploaded = await uploadImage(req.file.buffer);
+    updateData.photo = uploaded.secure_url || uploaded.url;
+  }
+  const updatedContact = await updateContact(contactId, updateData, req.user._id);
   if (!updatedContact) {
     throw createError(404, 'Contact not found');
   }
