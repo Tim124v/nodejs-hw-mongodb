@@ -1,0 +1,91 @@
+tags:
+  - Contacts
+summary: Update contact
+operationId: updateContact
+description: |
+  Updates an existing contact by ID.
+  Supports uploading a new image via multipart/form-data.
+  Requires user authentication.
+security:
+  - bearerAuth: []
+parameters:
+  - name: contactId
+    in: path
+    required: true
+    description: Unique contact identifier
+    schema:
+      type: string
+      pattern: '^[0-9a-fA-F]{24}$'
+    example: "507f1f77bcf86cd799439011"
+requestBody:
+  required: true
+  content:
+    multipart/form-data:
+      schema:
+        type: object
+        properties:
+          name:
+            type: string
+            minLength: 2
+            maxLength: 50
+            description: Contact name
+            example: "John Doe Updated"
+          email:
+            type: string
+            format: email
+            description: Contact email
+            example: "john.updated@example.com"
+          phone:
+            type: string
+            description: Contact phone
+            example: "+380501234568"
+          favorite:
+            type: boolean
+            description: Favorite contact
+            example: true
+          photo:
+            type: string
+            format: binary
+            description: New contact photo (PNG, JPG, up to 5MB)
+        minProperties: 1
+responses:
+  '200':
+    description: Contact updated successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: "Contact updated successfully"
+            data:
+              $ref: '../../../../docs/openapi.yaml#/components/schemas/Contact'
+  '400':
+    description: Validation error or invalid ID
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../docs/openapi.yaml#/components/schemas/Error'
+  '401':
+    description: Unauthorized
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../docs/openapi.yaml#/components/schemas/Error'
+  '404':
+    description: Contact not found
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../docs/openapi.yaml#/components/schemas/Error'
+  '500':
+    description: Image upload error
+    content:
+      application/json:
+        schema:
+          $ref: '../../../../docs/openapi.yaml#/components/schemas/Error'
+

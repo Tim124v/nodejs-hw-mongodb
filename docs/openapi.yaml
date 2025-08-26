@@ -1,0 +1,298 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Contacts API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: |
+    API for managing contacts with authentication and image uploads.
+    
+    ## Features:
+    - User registration and authentication
+    - Contacts management (CRUD operations)
+    - Image uploads to Cloudinary
+    - Password reset via email
+    
+    ## Authentication:
+    JWT-based. Add header `Authorization: Bearer <token>` to protected requests.
+
+tags:
+  - name: Auth
+    description: Authentication and authorization operations
+  - name: Contacts
+    description: Manage user's contacts
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+  - url: https://your-app-name.onrender.com
+    description: Production server
+
+paths:
+  # Аутентификация
+  /auth/register:
+    post:
+      $ref: '../swagger/paths/auth/register.yaml'
+  
+  /auth/login:
+    post:
+      $ref: '../swagger/paths/auth/login.yaml'
+  
+  /auth/send-reset-email:
+    post:
+      $ref: '../swagger/paths/auth/send-reset-email.yaml'
+  
+  /auth/reset-pwd:
+    post:
+      $ref: '../swagger/paths/auth/reset-pwd.yaml'
+  
+  # Контакты
+  /contacts:
+    get:
+      $ref: '../swagger/paths/contacts/get.yaml'
+    post:
+      $ref: '../swagger/paths/contacts/post.yaml'
+  
+  /contacts/{contactId}:
+    get:
+      $ref: '../swagger/paths/contacts/{id}/get.yaml'
+    patch:
+      $ref: '../swagger/paths/contacts/{id}/patch.yaml'
+    delete:
+      $ref: '../swagger/paths/contacts/{id}/delete.yaml'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT токен для аутентификации
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: "Validation error"
+        data:
+          type: object
+          example: {}
+    
+    # Компоненты контактов
+    Contact:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "+380501234567"
+        favorite:
+          type: boolean
+          default: false
+        photo:
+          type: string
+          format: uri
+          example: "https://res.cloudinary.com/example/image/upload/v123/contacts/photo.jpg"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - name
+        - email
+
+    ContactCreate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "+380501234567"
+        favorite:
+          type: boolean
+          default: false
+        photo:
+          type: string
+          format: uri
+          example: "https://res.cloudinary.com/example/image/upload/v123/contacts/photo.jpg"
+      required:
+        - name
+        - email
+
+    ContactUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        phone:
+          type: string
+          example: "+380501234567"
+        favorite:
+          type: boolean
+          example: true
+        photo:
+          type: string
+          format: uri
+          example: "https://res.cloudinary.com/example/image/upload/v123/contacts/photo.jpg"
+      minProperties: 1
+
+    ContactList:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Contacts retrieved successfully"
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contact'
+        pagination:
+          type: object
+          properties:
+            page:
+              type: integer
+              example: 1
+            limit:
+              type: integer
+              example: 10
+            total:
+              type: integer
+              example: 25
+
+    # Компоненты аутентификации
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: "507f1f77bcf86cd799439011"
+        name:
+          type: string
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    UserRegister:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 2
+          maxLength: 50
+          example: "John Doe"
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        password:
+          type: string
+          minLength: 6
+          maxLength: 50
+          example: "password123"
+      required:
+        - name
+        - email
+        - password
+
+    UserLogin:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+        password:
+          type: string
+          example: "password123"
+      required:
+        - email
+        - password
+
+    UserResetPassword:
+      type: object
+      properties:
+        token:
+          type: string
+          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        password:
+          type: string
+          minLength: 6
+          maxLength: 50
+          example: "newpassword123"
+      required:
+        - token
+        - password
+
+    UserSendResetEmail:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          example: "john@example.com"
+      required:
+        - email
+
+    AuthResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: "Login successful"
+        data:
+          type: object
+          properties:
+            user:
+              $ref: '#/components/schemas/User'
+            accessToken:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+            refreshToken:
+              type: string
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
