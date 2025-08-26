@@ -256,7 +256,7 @@ components:
       properties:
         token:
           type: string
-          example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+          example: "<jwt-token>"
         password:
           type: string
           minLength: 6
@@ -292,7 +292,7 @@ components:
               $ref: '#/components/schemas/User'
             accessToken:
               type: string
-              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              example: "<access-token>"
             refreshToken:
               type: string
-              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              example: "<refresh-token>"
