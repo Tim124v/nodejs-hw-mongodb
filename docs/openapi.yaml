@@ -26,7 +26,7 @@ tags:
 servers:
   - url: http://localhost:3000
     description: Local development
-  - url: https://your-app-name.onrender.com
+  - url: https://hw7-swagger-50v6.onrender.com
     description: Production server
 
 paths:
