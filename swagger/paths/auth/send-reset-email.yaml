@@ -1,0 +1,49 @@
+tags:
+  - Auth
+summary: Send password reset email
+operationId: sendResetEmail
+description: |
+  Sends an email with a password reset link.
+  Generates a JWT token with 5-minute expiration.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: '../../../docs/openapi.yaml#/components/schemas/UserSendResetEmail'
+responses:
+  '200':
+    description: Email sent successfully
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 200
+            message:
+              type: string
+              example: "Reset password email has been successfully sent."
+            data:
+              type: object
+              example: {}
+  '400':
+    description: Validation error
+    content:
+      application/json:
+        schema:
+          $ref: '../../../docs/openapi.yaml#/components/schemas/Error'
+  '404':
+    description: User not found
+    content:
+      application/json:
+        schema:
+          $ref: '../../../docs/openapi.yaml#/components/schemas/Error'
+  '500':
+    description: Failed to send email
+    content:
+      application/json:
+        schema:
+          $ref: '../../../docs/openapi.yaml#/components/schemas/Error'
+

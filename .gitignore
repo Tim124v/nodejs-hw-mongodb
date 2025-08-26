@@ -1,5 +1,7 @@
 .env
+.env.*
+*.env
+*.bak
+**/.DS_Store
+cookie.txt
 node_modules/
-.env.example
-.DS_Store
-npm-debug.log 

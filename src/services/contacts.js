@@ -26,7 +26,7 @@ export async function getAllContacts(queryParams) {
     .skip(Number(skip))
     .limit(Number(perPage));
 
-  const totalPages = Math.ceil(total / perPage);
+  const totalPages = Math.ceil(total / Number(perPage));
 
   return {
     data: contacts,
@@ -39,18 +39,18 @@ export async function getAllContacts(queryParams) {
   };
 }
 
-export async function getContactById(contactId) {
-  return await Contact.findById(contactId);
+export async function getContactById(contactId, userId) {
+  return await Contact.findOne({ _id: contactId, userId });
 }
 
 export async function createContact(contactData) {
   return await Contact.create(contactData);
 }
 
-export async function updateContact(contactId, updateData) {
-  return await Contact.findByIdAndUpdate(contactId, updateData, { new: true });
+export async function updateContact(contactId, updateData, userId) {
+  return await Contact.findOneAndUpdate({ _id: contactId, userId }, updateData, { new: true });
 }
 
-export async function deleteContact(contactId) {
-  return await Contact.findByIdAndDelete(contactId);
+export async function deleteContact(contactId, userId) {
+  return await Contact.findOneAndDelete({ _id: contactId, userId });
 } 

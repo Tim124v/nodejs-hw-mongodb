@@ -1,0 +1,32 @@
+tags:
+  - Auth
+summary: User login
+operationId: loginUser
+description: |
+  Authenticates a user by email and password and returns JWT tokens.
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: '../../../docs/openapi.yaml#/components/schemas/UserLogin'
+responses:
+  '200':
+    description: Login successful
+    content:
+      application/json:
+        schema:
+          $ref: '../../../docs/openapi.yaml#/components/schemas/AuthResponse'
+  '400':
+    description: Validation error
+    content:
+      application/json:
+        schema:
+          $ref: '../../../docs/openapi.yaml#/components/schemas/Error'
+  '401':
+    description: Invalid credentials
+    content:
+      application/json:
+        schema:
+          $ref: '../../../docs/openapi.yaml#/components/schemas/Error'
+

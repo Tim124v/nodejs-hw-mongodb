@@ -1,9 +1,12 @@
-import { getAllContacts } from '../services/contacts.js';
-import { getContactById } from '../services/contacts.js';
-import { createContact } from '../services/contacts.js';
-import { updateContact } from '../services/contacts.js';
-import { deleteContact } from '../services/contacts.js';
+import {
+  getAllContacts,
+  getContactById,
+  createContact,
+  updateContact,
+  deleteContact,
+} from '../services/contacts.js';
 import createError from 'http-errors';
+import { uploadImage } from '../services/upload.js';
 
 export async function getContactsController(req, res) {
   const {
@@ -11,13 +14,18 @@ export async function getContactsController(req, res) {
     perPage = 10,
     sortBy = 'name',
     sortOrder = 'asc',
-    type,
-    isFavourite
+    ...rawFilters
   } = req.query;
-  const result = await getAllContacts({ page, perPage, sortBy, sortOrder, type, isFavourite });
+
+  const filters = { ...rawFilters };
+  if (filters.type) {
+    filters.contactType = filters.type;
+    delete filters.type;
+  }
+
+  const result = await getAllContacts({ page, perPage, sortBy, sortOrder, ...filters, userId: req.user._id });
   res.status(200).json({
-    status: 'success',
-    code: 200,
+    status: 200,
     message: 'Successfully found contacts!',
     data: result,
   });
@@ -25,7 +33,7 @@ export async function getContactsController(req, res) {
 
 export async function getContactByIdController(req, res) {
   const { contactId } = req.params;
-  const contact = await getContactById(contactId);
+  const contact = await getContactById(contactId, req.user._id);
   if (!contact) {
     throw createError(404, 'Contact not found');
   }
@@ -37,7 +45,12 @@ export async function getContactByIdController(req, res) {
 }
 
 export async function createContactController(req, res) {
-  const contact = await createContact(req.body);
+  const data = { ...req.body, userId: req.user._id };
+  if (req.file?.buffer) {
+    const uploaded = await uploadImage(req.file.buffer);
+    data.photo = uploaded.secure_url || uploaded.url;
+  }
+  const contact = await createContact(data);
   res.status(201).json({
     status: 201,
     message: 'Successfully created a contact!',
@@ -47,7 +60,12 @@ export async function createContactController(req, res) {
 
 export async function updateContactController(req, res) {
   const { contactId } = req.params;
-  const updatedContact = await updateContact(contactId, req.body);
+  const updateData = { ...req.body };
+  if (req.file?.buffer) {
+    const uploaded = await uploadImage(req.file.buffer);
+    updateData.photo = uploaded.secure_url || uploaded.url;
+  }
+  const updatedContact = await updateContact(contactId, updateData, req.user._id);
   if (!updatedContact) {
     throw createError(404, 'Contact not found');
   }
@@ -60,9 +78,9 @@ export async function updateContactController(req, res) {
 
 export async function deleteContactController(req, res) {
   const { contactId } = req.params;
-  const deletedContact = await deleteContact(contactId);
+  const deletedContact = await deleteContact(contactId, req.user._id);
   if (!deletedContact) {
     throw createError(404, 'Contact not found');
   }
   res.status(204).send();
-} 
+}
