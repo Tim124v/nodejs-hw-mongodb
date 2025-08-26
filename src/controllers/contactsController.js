@@ -83,4 +83,4 @@ export async function deleteContactController(req, res) {
     throw createError(404, 'Contact not found');
   }
   res.status(204).send();
-} 
+}
