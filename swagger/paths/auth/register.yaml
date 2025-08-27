@@ -16,7 +16,7 @@ responses:
     content:
       application/json:
         schema:
-          $ref: '../../../docs/openapi.yaml#/components/schemas/AuthResponse'
+          $ref: '../../../docs/openapi.yaml#/components/schemas/RegisterResponse'
   '400':
     description: Validation error
     content:

@@ -30,19 +30,23 @@ requestBody:
             maxLength: 50
             description: Contact name
             example: "John Doe Updated"
+          phoneNumber:
+            type: string
+            description: Contact phone number
+            example: "+380501234568"
           email:
             type: string
             format: email
             description: Contact email
             example: "john.updated@example.com"
-          phone:
-            type: string
-            description: Contact phone
-            example: "+380501234568"
-          favorite:
+          isFavourite:
             type: boolean
-            description: Favorite contact
+            description: Favourite flag
             example: true
+          contactType:
+            type: string
+            description: Contact type
+            enum: [work, home, personal]
           photo:
             type: string
             format: binary

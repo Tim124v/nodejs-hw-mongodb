@@ -98,12 +98,15 @@ components:
           type: string
           format: email
           example: "john@example.com"
-        phone:
+        phoneNumber:
           type: string
           example: "+380501234567"
-        favorite:
+        isFavourite:
           type: boolean
           default: false
+        contactType:
+          type: string
+          enum: [work, home, personal]
         photo:
           type: string
           format: uri
@@ -130,19 +133,18 @@ components:
           type: string
           format: email
           example: "john@example.com"
-        phone:
+        phoneNumber:
           type: string
           example: "+380501234567"
-        favorite:
+        isFavourite:
           type: boolean
-          default: false
-        photo:
+        contactType:
           type: string
-          format: uri
-          example: "https://res.cloudinary.com/example/image/upload/v123/contacts/photo.jpg"
+          enum: [work, home, personal]
       required:
         - name
-        - email
+        - phoneNumber
+        - contactType
 
     ContactUpdate:
       type: object
@@ -156,12 +158,14 @@ components:
           type: string
           format: email
           example: "john@example.com"
-        phone:
+        phoneNumber:
           type: string
           example: "+380501234567"
-        favorite:
+        isFavourite:
           type: boolean
-          example: true
+        contactType:
+          type: string
+          enum: [work, home, personal]
         photo:
           type: string
           format: uri
@@ -176,23 +180,32 @@ components:
           example: 200
         message:
           type: string
-          example: "Contacts retrieved successfully"
+          example: "Successfully found contacts!"
         data:
-          type: array
-          items:
-            $ref: '#/components/schemas/Contact'
-        pagination:
           type: object
           properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Contact'
             page:
               type: integer
               example: 1
-            limit:
+            perPage:
               type: integer
               example: 10
-            total:
+            totalItems:
               type: integer
               example: 25
+            totalPages:
+              type: integer
+              example: 3
+            hasPreviousPage:
+              type: boolean
+              example: false
+            hasNextPage:
+              type: boolean
+              example: true
 
     # Компоненты аутентификации
     User:
@@ -276,7 +289,7 @@ components:
       required:
         - email
 
-    AuthResponse:
+    LoginResponse:
       type: object
       properties:
         status:
@@ -284,15 +297,21 @@ components:
           example: 200
         message:
           type: string
-          example: "Login successful"
+          example: "Successfully logged in an user!"
         data:
           type: object
           properties:
-            user:
-              $ref: '#/components/schemas/User'
             accessToken:
               type: string
               example: "<access-token>"
-            refreshToken:
-              type: string
-              example: "<refresh-token>"
+    RegisterResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+          example: 201
+        message:
+          type: string
+          example: "Successfully registered a user!"
+        data:
+          $ref: '#/components/schemas/User'

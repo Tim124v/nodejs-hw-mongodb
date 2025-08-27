@@ -21,27 +21,30 @@ requestBody:
             maxLength: 50
             description: Contact name
             example: "John Doe"
+          phoneNumber:
+            type: string
+            description: Contact phone number
+            example: "+380501234567"
           email:
             type: string
             format: email
             description: Contact email
             example: "john@example.com"
-          phone:
-            type: string
-            description: Contact phone
-            example: "+380501234567"
-          favorite:
+          isFavourite:
             type: boolean
-            description: Favorite contact
-            default: false
-            example: false
+            description: Favourite flag
+          contactType:
+            type: string
+            description: Contact type
+            enum: [work, home, personal]
           photo:
             type: string
             format: binary
             description: Contact photo (PNG, JPG, up to 5MB)
         required:
           - name
-          - email
+          - phoneNumber
+          - contactType
 responses:
   '201':
     description: Contact created successfully

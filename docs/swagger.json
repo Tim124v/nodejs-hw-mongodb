@@ -54,7 +54,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "$ref": "#/components/schemas/RegisterResponse"
                 }
               }
             }
@@ -89,7 +89,7 @@
         ],
         "summary": "User login",
         "operationId": "loginUser",
-        "description": "Authenticates a user by email and password and returns JWT tokens.\n",
+        "description": "Authenticates a user by email and password and returns JWT tokens.\nResponse contains only accessToken in data, cookies carry refreshToken and sessionId.\n",
         "requestBody": {
           "required": true,
           "content": {
@@ -106,7 +106,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AuthResponse"
+                  "$ref": "#/components/schemas/LoginResponse"
                 }
               }
             }
@@ -313,7 +313,7 @@
             "example": 1
           },
           {
-            "name": "limit",
+            "name": "perPage",
             "in": "query",
             "required": false,
             "description": "Items per page",
@@ -326,14 +326,61 @@
             "example": 10
           },
           {
-            "name": "favorite",
+            "name": "sortBy",
             "in": "query",
             "required": false,
-            "description": "Filter by favorite contacts",
+            "description": "Field to sort by",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "name",
+                "email",
+                "phoneNumber",
+                "createdAt"
+              ],
+              "default": "name"
+            },
+            "example": "name"
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "required": false,
+            "description": "Sort order",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "asc",
+                "desc"
+              ],
+              "default": "asc"
+            },
+            "example": "asc"
+          },
+          {
+            "name": "isFavourite",
+            "in": "query",
+            "required": false,
+            "description": "Filter by favourite flag",
             "schema": {
               "type": "boolean"
             },
             "example": true
+          },
+          {
+            "name": "contactType",
+            "in": "query",
+            "required": false,
+            "description": "Filter by contact type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "work",
+                "home",
+                "personal"
+              ]
+            },
+            "example": "work"
           }
         ],
         "responses": {
@@ -395,22 +442,29 @@
                     "description": "Contact name",
                     "example": "John Doe"
                   },
+                  "phoneNumber": {
+                    "type": "string",
+                    "description": "Contact phone number",
+                    "example": "+380501234567"
+                  },
                   "email": {
                     "type": "string",
                     "format": "email",
                     "description": "Contact email",
                     "example": "john@example.com"
                   },
-                  "phone": {
-                    "type": "string",
-                    "description": "Contact phone",
-                    "example": "+380501234567"
-                  },
-                  "favorite": {
+                  "isFavourite": {
                     "type": "boolean",
-                    "description": "Favorite contact",
-                    "default": false,
-                    "example": false
+                    "description": "Favourite flag"
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "description": "Contact type",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ]
                   },
                   "photo": {
                     "type": "string",
@@ -420,7 +474,8 @@
                 },
                 "required": [
                   "name",
-                  "email"
+                  "phoneNumber",
+                  "contactType"
                 ]
               }
             }
@@ -604,21 +659,30 @@
                     "description": "Contact name",
                     "example": "John Doe Updated"
                   },
+                  "phoneNumber": {
+                    "type": "string",
+                    "description": "Contact phone number",
+                    "example": "+380501234568"
+                  },
                   "email": {
                     "type": "string",
                     "format": "email",
                     "description": "Contact email",
                     "example": "john.updated@example.com"
                   },
-                  "phone": {
-                    "type": "string",
-                    "description": "Contact phone",
-                    "example": "+380501234568"
-                  },
-                  "favorite": {
+                  "isFavourite": {
                     "type": "boolean",
-                    "description": "Favorite contact",
+                    "description": "Favourite flag",
                     "example": true
+                  },
+                  "contactType": {
+                    "type": "string",
+                    "description": "Contact type",
+                    "enum": [
+                      "work",
+                      "home",
+                      "personal"
+                    ]
                   },
                   "photo": {
                     "type": "string",
@@ -723,29 +787,9 @@
           }
         ],
         "responses": {
-          "200": {
+          "204": {
             "description": "Contact deleted successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 200
-                    },
-                    "message": {
-                      "type": "string",
-                      "example": "Contact deleted successfully"
-                    },
-                    "data": {
-                      "type": "object",
-                      "example": {}
-                    }
-                  }
-                }
-              }
-            }
+            "content": {}
           },
           "400": {
             "description": "Invalid ID format",
@@ -824,13 +868,21 @@
             "format": "email",
             "example": "john@example.com"
           },
-          "phone": {
+          "phoneNumber": {
             "type": "string",
             "example": "+380501234567"
           },
-          "favorite": {
+          "isFavourite": {
             "type": "boolean",
             "default": false
+          },
+          "contactType": {
+            "type": "string",
+            "enum": [
+              "work",
+              "home",
+              "personal"
+            ]
           },
           "photo": {
             "type": "string",
@@ -865,23 +917,26 @@
             "format": "email",
             "example": "john@example.com"
           },
-          "phone": {
+          "phoneNumber": {
             "type": "string",
             "example": "+380501234567"
           },
-          "favorite": {
-            "type": "boolean",
-            "default": false
+          "isFavourite": {
+            "type": "boolean"
           },
-          "photo": {
+          "contactType": {
             "type": "string",
-            "format": "uri",
-            "example": "https://res.cloudinary.com/example/image/upload/v123/contacts/photo.jpg"
+            "enum": [
+              "work",
+              "home",
+              "personal"
+            ]
           }
         },
         "required": [
           "name",
-          "email"
+          "phoneNumber",
+          "contactType"
         ]
       },
       "ContactUpdate": {
@@ -898,13 +953,20 @@
             "format": "email",
             "example": "john@example.com"
           },
-          "phone": {
+          "phoneNumber": {
             "type": "string",
             "example": "+380501234567"
           },
-          "favorite": {
-            "type": "boolean",
-            "example": true
+          "isFavourite": {
+            "type": "boolean"
+          },
+          "contactType": {
+            "type": "string",
+            "enum": [
+              "work",
+              "home",
+              "personal"
+            ]
           },
           "photo": {
             "type": "string",
@@ -923,28 +985,40 @@
           },
           "message": {
             "type": "string",
-            "example": "Contacts retrieved successfully"
+            "example": "Successfully found contacts!"
           },
           "data": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/Contact"
-            }
-          },
-          "pagination": {
             "type": "object",
             "properties": {
+              "data": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Contact"
+                }
+              },
               "page": {
                 "type": "integer",
                 "example": 1
               },
-              "limit": {
+              "perPage": {
                 "type": "integer",
                 "example": 10
               },
-              "total": {
+              "totalItems": {
                 "type": "integer",
                 "example": 25
+              },
+              "totalPages": {
+                "type": "integer",
+                "example": 3
+              },
+              "hasPreviousPage": {
+                "type": "boolean",
+                "example": false
+              },
+              "hasNextPage": {
+                "type": "boolean",
+                "example": true
               }
             }
           }
@@ -1053,7 +1127,7 @@
           "email"
         ]
       },
-      "AuthResponse": {
+      "LoginResponse": {
         "type": "object",
         "properties": {
           "status": {
@@ -1062,23 +1136,32 @@
           },
           "message": {
             "type": "string",
-            "example": "Login successful"
+            "example": "Successfully logged in an user!"
           },
           "data": {
             "type": "object",
             "properties": {
-              "user": {
-                "$ref": "#/components/schemas/User"
-              },
               "accessToken": {
                 "type": "string",
                 "example": "<access-token>"
-              },
-              "refreshToken": {
-                "type": "string",
-                "example": "<refresh-token>"
               }
             }
+          }
+        }
+      },
+      "RegisterResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "integer",
+            "example": 201
+          },
+          "message": {
+            "type": "string",
+            "example": "Successfully registered a user!"
+          },
+          "data": {
+            "$ref": "#/components/schemas/User"
           }
         }
       }
